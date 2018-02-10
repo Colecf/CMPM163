@@ -1,7 +1,7 @@
 var FirstPersonCamera = function(input) {
     this.yaw = new THREE.Object3D();
     this.pitch = new THREE.Object3D();
-    this.camera = new THREE.PerspectiveCamera( 60.0, window.innerWidth / window.innerHeight, 0.1, 50 );
+    this.camera = new THREE.PerspectiveCamera( 60.0, window.innerWidth / window.innerHeight, 0.01, 3000 );
     this.yaw.add(this.pitch);
     this.pitch.add(this.camera);
     this.enabled = false;
@@ -44,10 +44,18 @@ var FirstPersonCamera = function(input) {
 
     document.addEventListener('pointerlockchange', this.pointerLockChange, false);
 
+    this.updateProjectionMatrix = function() {
+        t.camera.updateProjectionMatrix();
+    };
+    
     Object.defineProperties(this, {
         'position': {
             get: function() { return t.yaw.position; },
             set: function(x) { t.yaw.position = x; }
+        },
+        'aspect': {
+            get: function() { return t.camera.aspect; },
+            set: function(x) { t.camera.aspect = x; }
         }
     });
 };
