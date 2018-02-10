@@ -35,19 +35,24 @@ var Input = function(){
         };
     };
 
-    var canvas;
+
+    var t = this;
     var adjustMouseCoords = function(e) {
-        var x = e.clientX; // x coordinate of a mouse pointer
-        var y = e.clientY; // y coordinate of a mouse pointer
-        var rect = e.target.getBoundingClientRect() ;
-        x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
-        y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
-        return {x:x, y:y, z: 0,
-                cx: e.clientX - rect.left, cy: e.clientY - rect.top};
+        
+        if(t.canvas) {
+            var x = e.clientX; // x coordinate of a mouse pointer
+            var y = e.clientY; // y coordinate of a mouse pointer
+            var rect = e.target.getBoundingClientRect() ;
+            x = ((x - rect.left) - t.canvas.width/2)/(t.canvas.width/2);
+            y = (t.canvas.height/2 - (y - rect.top))/(t.canvas.height/2);
+            return {x:x, y:y, z: 0,
+                    cx: e.clientX - rect.left, cy: e.clientY - rect.top};
+        }
+        return undefined;
     };
     this.setup = function(elem) {
-        var t = this;
-        canvas = elem;
+
+        t.canvas = elem;
         
         elem.onmousedown = function(e) {
             var button = e.button;

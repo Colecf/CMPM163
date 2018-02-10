@@ -27,17 +27,20 @@ function load() {
 }
 
 function init() {
-    camera = new THREE.PerspectiveCamera( 60.0, window.innerWidth / window.innerHeight, 0.1, 50 );
-    camera.position.z = 5;
-
+    camera = new FirstPersonCamera(input);
+    camera.position.y = 0.2;
     scene = new THREE.Scene();
+    scene.add(camera.yaw);
     console.log(heightmap);
     var terrainMaterial = new THREE.ShaderMaterial({
         uniforms: {
             heightMap: { type: "t", value: heightmap }
         },
         vertexShader: shaders["terrain.vert"],
-        fragmentShader: shaders["terrain.frag"]
+        fragmentShader: shaders["terrain.frag"],
+        //blending:       THREE.AdditiveBlending,
+	//depthTest:      false,
+	transparent:    true
     });
     var waterMaterial = new THREE.ShaderMaterial({
         uniforms: {
@@ -48,6 +51,7 @@ function init() {
     });
     var planeGeometry = new THREE.PlaneGeometry(1, 1, 100, 100);
     terrain = new THREE.Mesh(planeGeometry, terrainMaterial);
+    terrain.rotation.x = 3*Math.PI/2;
     scene.add(terrain);
 
     renderer = new THREE.WebGLRenderer();
@@ -64,13 +68,9 @@ function animate() {
     requestAnimationFrame( animate );
     var time = performance.now();
     var delta = time - lastFrameTime;
-    if(input.isKeyDown("ArrowUp") || input.isKeyDown("w")) {
-        camera.position.y += delta/100;
-    }
-    if(input.isKeyDown("ArrowDown") || input.isKeyDown("s")) {
-        camera.position.y -= delta/100;
-    }
-    renderer.render( scene, camera );
+    camera.compute(delta);
+
+    renderer.render( scene, camera.camera );
 
     lastFrameTime = time;
 }
