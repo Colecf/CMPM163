@@ -42,10 +42,7 @@ function load() {
 }
 
 function init() {
-    camera = new FirstPersonCamera(input);
-    camera.position.y = 0.2;
     scene = new THREE.Scene();
-    scene.add(camera.yaw);
 
     var terrainMaterial = new THREE.ShaderMaterial({
         uniforms: {
@@ -89,14 +86,23 @@ function init() {
     renderer.setClearColor( 0x999999 );
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
-    input.setup(document.body);
+    renderer.domElement.tabIndex = "1"; // needed to receive keyboard presses
+    input.setup(renderer.domElement);
+    camera = new FirstPersonCamera(input);
+    camera.position.y = 0.2;
+    scene.add(camera.yaw);
 
     window.addEventListener( 'resize', onWindowResize, false );
+
+    var gui = new dat.GUI();
+    gui.add(camera, 'moveSpeed', 0.0001, 0.001);
+    
     animate();
 }
 
 function animate() {
     requestAnimationFrame( animate );
+    
     var time = performance.now();
     var delta = time - lastFrameTime;
     camera.compute(delta);
