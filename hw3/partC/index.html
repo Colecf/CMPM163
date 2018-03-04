@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Cole Faust - HW3 part C</title>
+  </head>
+  <body>
+    <h3>Part 1</h3>
+    <p>I plan on implementing screen space ambient occlusion for the most of my final project. It appears that the technique works by sampling points around the fragment you're trying to shade, and seeing how many of them fall in some other geometry. The more points nearby that are part of other geometry, the darker the curren fragment should be. This has the effect of making corners, edges, and narrow gaps between objects shaded darker. I think the effect looks quite nice, as it can help the eye identify edges of objects and make them look more 3d.</p>
+
+    <p>The sampling will be done in a hemisphere around the point to draw, facing the direction of the surface's normal. If we sampled spherically in every direction, flat walls would be shaded because we will sample inside the wall.</p>
+    
+    <p>The only problem with it is that it is very slow to take a bunch of samples around every point and see if they fall inside of geometry. There are several solutions for this that I'll be implementing. The first is to use the depth buffer of the scene in order to determine if the sampled point is inside geometry. If the sampled point's distance to the camera is greater than the value at the depth buffer, we say it is inside geometry. This has an issue if there's a completely different object way in front of the object you're shading, so we add a limit to how far away an occulding depth map value can be in order to contribute to the overall occlusion.</p>
+
+    <p>To minimize artifacts in the final image, I will rotate the sample points every so often, and blur the final result. I still need to do more research on the blurring, as I'm not confident in my knowledge of it's details.</p>
+
+    <p>As an extra little effect, I'd like to make the scene appear to be miniaturized by applying a tilt-shift effect, where the top and bottom of the final image is blurred.</p>
+
+    <h3>Part 2</h3>
+
+    <p>I actually don't have a partner for this project at the moment. I'd be fine working on it alone, but I will still be on the lookout if anyone is in a similar position.</p>
+  </body>
+</html>
