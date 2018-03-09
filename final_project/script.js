@@ -1,16 +1,32 @@
 var camera, scene, renderer;
 var shaders = {};
 var textures = {};
+var postProcessors = {};
+var postProcessingNames = ['none', 'squares'];
+var options = {
+    activePostProcessor: 'none'
+};
+
+/*function nextPO2(x) {
+    return Math.pow(2, Math.ceil(Math.log(x)/Math.log(2)));
+}*/
 
 load();
 function load() {
-    var shaderNames = ['scene.vert', 'scene.frag'];
-    var todo = shaderNames.length;
+    var shaderNames = [];
+    var todo = shaderNames.length + postProcessingNames.length;
 
     var fileLoader = new THREE.FileLoader();
-    shaderNames.forEach(name => {
+    shaderNames.concat(postProcessingNames.map(function(x) {
+        return 'postProcessors/'+x+'.frag';
+    })).forEach(name => {
         fileLoader.load(name, data => {
-            shaders[name] = data;
+            var noExtension = name.substring('postProcessors/'.length, name.length-5);
+            if(postProcessingNames.indexOf(noExtension) >= 0) {
+                postProcessors[noExtension] = new PostProcessor(data);
+            } else {
+                shaders[name] = data;
+            }
             if(--todo == 0) {
                 init();
             }
@@ -48,19 +64,28 @@ function init() {
 
     var gui = new dat.GUI();
     //gui.add(plane.material.uniforms.timeScale, "value", 0, 0.01).name("Time scale");
-    
+    gui.add(options, 'activePostProcessor', postProcessingNames).name("Post Processor");
     
     animate();
 }
 
+var FBO = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
+                                      { minFilter: THREE.MinFilter,
+                                        magFilter: THREE.LinearFilter
+                                      });
 function animate() {
     requestAnimationFrame( animate );
     var time = performance.now();
-    //plane.material.uniforms.time.value = time;
-    renderer.render( scene, camera );
+
+    renderer.render( scene, camera, FBO);
+    postProcessors[options.activePostProcessor].render(renderer, FBO);
 }
 
 function onWindowResize( event ) {
+    FBO.width = window.innerWidth;
+    FBO.height = window.innerHeight;
     //plane.material.uniforms.iResolution.value = [window.innerWidth, window.innerHeight];
     renderer.setSize( window.innerWidth, window.innerHeight );
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 }
