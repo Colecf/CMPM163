@@ -4,12 +4,14 @@ void main() {
 }
 `;
 
-function PostProcessor(frag) {
+function PostProcessor(frag, uniforms) {
+    if(!uniforms) uniforms = {};
+    
     this.planeMaterial = new THREE.ShaderMaterial({
-        uniforms: {
+        uniforms: THREE.UniformsUtils.merge([uniforms, {
             inputTexture: { type: 't', value: undefined },
             iResolution: { type: "2f", value: [window.innerWidth, window.innerHeight] }
-        },
+        }]),
         vertexShader: postProcessingVertexShader,
         fragmentShader: frag
     });
@@ -28,9 +30,15 @@ function PostProcessor(frag) {
             renderer.render(t.scene, t.camera);
         }
     };
+
     this.onWindowResize = function(e) {
         t.plane.material.uniforms.iResolution.value = [window.innerWidth, window.innerHeight];
-        //new THREE.WebGLRenderTarget( resX, resY, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter});
-        //renderer.setSize( window.innerWidth, window.innerHeight );
     };
+
+    Object.defineProperties(this, {
+        'uniforms': {
+            get: function() { return t.planeMaterial.uniforms; },
+            set: function(x) { t.planeMaterial.uniforms = x; }
+        }
+    });
 }
