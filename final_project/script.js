@@ -4,7 +4,7 @@ var controls;
 var shaders = {};
 var textures = {};
 var postProcessors = {};
-var postProcessingDefinitions = [{name: 'none'}, {name: 'squares'}, {name: 'blur', uniforms: {radius: {type: 'f', value: 15}}}];
+var postProcessingDefinitions = [{name: 'none'}, {name: 'pixelation', uniforms: {pixelAmt: {type: 'f', value: 32.0}}}, {name: 'squares'}, {name: 'blur', uniforms: {radius: {type: 'f', value: 15}}}];
 var options = {
     activePostProcessor: 'none',
     glowState: 'composited'
@@ -87,6 +87,7 @@ function init() {
             postProcessingDefinitions.map(x => x.name)).name("Post Processor");
     gui.add(options, 'glowState', ['none', 'pre glow', 'only glow', 'composited']);
     gui.add(postProcessors['blur'].uniforms.radius, 'value', 0, 100).name("Glow radius");
+    gui.add(postProcessors['pixelation'].uniforms.pixelAmt, 'value', 4, 100).name("pixelation");
     
     animate();
 }
