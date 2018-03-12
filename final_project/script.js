@@ -10,7 +10,10 @@ var postProcessingDefinitions = [
         pixelAmt: {type: 'f', value: 32.0}
     }},
     {name: 'squares'},
-    {name: 'blur', uniforms: {
+    {name: 'hblur', uniforms: {
+        radius: {type: 'f', value: 15}
+    }},
+    {name: 'vblur', uniforms: {
         radius: {type: 'f', value: 15}
     }}
 ];
@@ -90,32 +93,26 @@ function init() {
     gui.add(options, "timeScale", 0, 2.0).name("Time scale");
     gui.add(options, 'activePostProcessor',
             postProcessingDefinitions.map(x => x.name)).name("Post Processor");
-    gui.add(options, 'glowState', ['none', 'pre glow', 'only glow', 'composited']);
-    gui.add(postProcessors['blur'].uniforms.radius, 'value', 0, 100).name("Glow radius");
+    gui.add(options, 'glowState', ['none', 'pre glow', 'hblur', 'h+vblur', 'composited']);
+    gui.add(postProcessors['hblur'].uniforms.radius, 'value', 0, 100).name("Glow radius");
     gui.add(postProcessors['pixelation'].uniforms.pixelAmt, 'value', 4, 100).name("pixelation");
     
     animate();
 }
 
-var basicFBO = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
-                                      { minFilter: THREE.MinFilter,
-                                        magFilter: THREE.LinearFilter
-                                      });
-var preGlowFBO = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
-                                          { minFilter: THREE.MinFilter,
-                                            magFilter: THREE.LinearFilter
-                                          });
-var glowFBO = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
-                                          { minFilter: THREE.MinFilter,
-                                            magFilter: THREE.LinearFilter
-                                          });
-var compositedGlowFBO = new THREE.WebGLRenderTarget(
-    window.innerWidth,
-    window.innerHeight,
-    { minFilter: THREE.MinFilter,
-      magFilter: THREE.LinearFilter
-    });
-var glowCompositor = new Compositor([basicFBO, glowFBO]);
+function makeTexture() {
+    return new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
+                                       { minFilter: THREE.MinFilter,
+                                         magFilter: THREE.LinearFilter
+                                       });
+}
+
+var basicFBO = makeTexture();
+var preGlowFBO = makeTexture();
+var hblurFBO = makeTexture();
+var vblurFBO = makeTexture();
+var compositedGlowFBO = makeTexture();
+var glowCompositor = new Compositor([basicFBO, vblurFBO]);
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -147,9 +144,12 @@ function animate() {
             }
         });
         if(options.glowState != 'pre glow') {
-            postProcessors['blur'].render(renderer, preGlowFBO, glowFBO);
-            if(options.glowState != 'only glow') {
-                glowCompositor.render(renderer, compositedGlowFBO);
+            postProcessors['hblur'].render(renderer, preGlowFBO, hblurFBO);
+            if(options.glowState != 'hblur') {
+                postProcessors['vblur'].render(renderer, hblurFBO, vblurFBO);
+                if(options.glowState != 'h+vblur') {
+                    glowCompositor.render(renderer, compositedGlowFBO);
+                }
             }
         }
     }
@@ -158,8 +158,10 @@ function animate() {
         postProcessors[options.activePostProcessor].render(renderer, basicFBO);
     } else if (options.glowState == 'pre glow') {
         postProcessors[options.activePostProcessor].render(renderer, preGlowFBO);
-    } else if (options.glowState == 'only glow') {
-        postProcessors[options.activePostProcessor].render(renderer, glowFBO);
+    } else if (options.glowState == 'hblur') {
+        postProcessors[options.activePostProcessor].render(renderer, hblurFBO);
+    } else if (options.glowState == 'h+vblur') {
+        postProcessors[options.activePostProcessor].render(renderer, vblurFBO);
     } else {
         postProcessors[options.activePostProcessor].render(renderer, compositedGlowFBO);
     }
