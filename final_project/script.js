@@ -4,18 +4,26 @@ var controls;
 var shaders = {};
 var textures = {};
 var postProcessors = {};
-var postProcessingDefinitions = [{name: 'none'}, {name: 'pixelation', uniforms: {pixelAmt: {type: 'f', value: 32.0}}}, {name: 'squares'}, {name: 'blur', uniforms: {radius: {type: 'f', value: 15}}}];
+var postProcessingDefinitions = [
+    {name: 'none'},
+    {name: 'pixelation', uniforms: {
+        pixelAmt: {type: 'f', value: 32.0}
+    }},
+    {name: 'squares'},
+    {name: 'blur', uniforms: {
+        radius: {type: 'f', value: 15}
+    }}
+];
 var options = {
     activePostProcessor: 'none',
-    glowState: 'composited'
+    glowState: 'composited',
+    timeScale: 0
 };
 
 var glowMaterial  = new THREE.MeshBasicMaterial({color: 0x0022FF});
 var blackMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
 
-/*function nextPO2(x) {
-    return Math.pow(2, Math.ceil(Math.log(x)/Math.log(2)));
-}*/
+var light1, light2;
 
 load();
 function load() {
@@ -49,10 +57,10 @@ function load() {
 }
 
 function init() {
-    var light1 = new THREE.PointLight(0xaaaaaa, 1, 0);
+    light1 = new THREE.PointLight(0xaaaaaa, 1, 0);
     light1.position.set(1.0, 5.0, 5.0);
     scene.add(light1);
-    var light2 = new THREE.PointLight(0xaaaaaa, 1, 0);
+    light2 = new THREE.PointLight(0xaaaaaa, 1, 0);
     light2.position.set(-1.5, -5.0, 5.0);
     scene.add(light2);
     
@@ -76,13 +84,10 @@ function init() {
     camera.position.z = 5;
     controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-    //camera = new THREE.OrthographicCamera( -1.5, 1.5, 1.5, -1.5, 0.1, 1000 );
-    //camera.position.z = 0.3;
-
     window.addEventListener( 'resize', onWindowResize, false );
 
     var gui = new dat.GUI();
-    //gui.add(plane.material.uniforms.timeScale, "value", 0, 0.01).name("Time scale");
+    gui.add(options, "timeScale", 0, 2.0).name("Time scale");
     gui.add(options, 'activePostProcessor',
             postProcessingDefinitions.map(x => x.name)).name("Post Processor");
     gui.add(options, 'glowState', ['none', 'pre glow', 'only glow', 'composited']);
@@ -112,31 +117,42 @@ var compositedGlowFBO = new THREE.WebGLRenderTarget(
     });
 var glowCompositor = new Compositor([basicFBO, glowFBO]);
 function animate() {
-    requestAnimationFrame( animate );
-    var time = performance.now();
+    requestAnimationFrame(animate);
     controls.update();
+    var time = performance.now() * options.timeScale/1000;
+
+    light1.position.x = 5*Math.sin(time);
+    light1.position.z = 5*Math.cos(time);
+
+    light2.position.x = 5*Math.sin(time);
+    light2.position.z = 5*Math.cos(time);
 
     renderer.render(scene, camera, basicFBO);
 
-    // Make everything black except what's supposed to glow
-    scene.traverse( function( node ) {
-        if ( node instanceof THREE.Mesh ) {
-            node.materialBackup = node.material;
-            if(node.material != glowMaterial) {
-                node.material = blackMaterial;
+    if(options.glowState != 'none') {
+        // Make everything black except what's supposed to glow
+        scene.traverse(function( node ) {
+            if ( node instanceof THREE.Mesh ) {
+                node.materialBackup = node.material;
+                if(node.material != glowMaterial) {
+                    node.material = blackMaterial;
+                }
+            }
+        });
+        renderer.render(scene, camera, preGlowFBO);
+        // Return the original materials to everything
+        scene.traverse( function( node ) {
+            if ( node instanceof THREE.Mesh ) {
+                node.material = node.materialBackup;
+            }
+        });
+        if(options.glowState != 'pre glow') {
+            postProcessors['blur'].render(renderer, preGlowFBO, glowFBO);
+            if(options.glowState != 'only glow') {
+                glowCompositor.render(renderer, compositedGlowFBO);
             }
         }
-    } );
-    renderer.render(scene, camera, preGlowFBO);
-    // Return the original materials to everything
-    scene.traverse( function( node ) {
-        if ( node instanceof THREE.Mesh ) {
-            node.material = node.materialBackup;
-        }
-    });
-
-    postProcessors['blur'].render(renderer, preGlowFBO, glowFBO);
-    glowCompositor.render(renderer, compositedGlowFBO);
+    }
 
     if(options.glowState == 'none') {
         postProcessors[options.activePostProcessor].render(renderer, basicFBO);

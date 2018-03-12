@@ -5,7 +5,11 @@ uniform sampler2D inputTexture;
 uniform float pixelAmt;
 
 void main() {
+  // Alternate implementation
+  //gl_FragColor = texture2D(inputTexture, floor((gl_FragCoord.xy/iResolution)*pixelAmt)/pixelAmt);
+
   vec2 vUV = gl_FragCoord.xy / iResolution * vec2(pixelAmt, pixelAmt);
+  
   // pixelAmount
   vec2 pixelAmount = vec2( 0.05 );
   vec2 x     = fract( vUV );
