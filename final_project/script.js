@@ -94,7 +94,9 @@ function init() {
     gui.add(options, 'activePostProcessor',
             postProcessingDefinitions.map(x => x.name)).name("Post Processor");
     gui.add(options, 'glowState', ['none', 'pre glow', 'hblur', 'h+vblur', 'composited']);
-    gui.add(postProcessors['hblur'].uniforms.radius, 'value', 0, 100).name("Glow radius");
+    gui.add(postProcessors['hblur'].uniforms.radius, 'value', 0, 100).name("Glow radius").onFinishChange(function() {
+        postProcessors['vblur'].uniforms.radius.value = postProcessors['hblur'].uniforms.radius.value;
+    });
     gui.add(postProcessors['pixelation'].uniforms.pixelAmt, 'value', 4, 100).name("pixelation");
     
     animate();
