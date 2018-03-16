@@ -60,6 +60,41 @@ function load() {
 }
 
 function init() {
+
+    // adding desk
+    addObj("assets/desk.mtl", "assets/desk.obj", function( object ) {
+        object.scale.set(2, 2, 4);
+        object.position.y += -1.3;
+        object.position.z += -3;
+        scene.add(object);
+    });
+
+    // adding computer
+    addObj("assets/computer.mtl", "assets/computer.obj", function( object ) {
+        object.scale.set(2, 2, 2); 
+        object.position.z += -3;
+        scene.add(object);
+    });
+
+    // adding lamp
+    addObj("assets/lamp.mtl", "assets/lamp.obj", function( object ) {
+        object.scale.set(1, 1, 1);
+        object.position.x += 3.5;
+        object.position.y += 1;
+        object.position.z += -1 - 3;
+        scene.add(object);
+    });
+
+    // adding room corner
+    addObj("assets/room.mtl", "assets/room.obj", function( object ) {
+        object.scale.set(2, 2, 2);
+        object.rotateY(-Math.PI / 2);
+        object.position.y -= 1;
+        object.position.z += -3;
+        scene.add(object);
+    });
+
+
     light1 = new THREE.PointLight(0xaaaaaa, 1, 0);
     light1.position.set(1.0, 5.0, 5.0);
     scene.add(light1);
