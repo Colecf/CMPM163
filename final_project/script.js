@@ -2,7 +2,7 @@
 var bufferObject;
 var bufferScene;
 var bufferCamera;
-var planeMesh
+var planeMesh;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -71,56 +71,9 @@ function load() {
 function init() {
 /////////////////////////////////////////////////////////////////////////////
 
-	bufferObject = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
-	bufferScene  = new THREE.Scene();
-	bufferCamera = new THREE.PerspectiveCamera( 90.0, window.innerWidth / window.innerHeight, 0.1, 1000 );
-	bufferCamera.position.z += 5.0;
-
-////// adding all objects to scene, then off-screen buffer for computrer screen image
-    // adding desk
-    addObj("assets/desk.mtl", "assets/desk.obj", function( object ) {
-        object.scale.set(2, 2, 4);
-        object.position.y += -1.3;
-        object.position.z += -3;
-        bufferScene.add(object);
-    });
-
-    // adding computer
-    addObj("assets/computer.mtl", "assets/computer.obj", function( object ) {
-        object.scale.set(2, 2, 2); 
-        object.position.z += -3;
-        bufferScene.add(object);
-    });
-
-    // adding lamp
-    addObj("assets/lamp.mtl", "assets/lamp.obj", function( object ) {
-        object.scale.set(1, 1, 1);
-        object.position.x += 3.5;
-        object.position.y += 1;
-        object.position.z += -4;
-        bufferScene.add(object);
-    });
-
-    // adding room corner
-    addObj("assets/room.mtl", "assets/room.obj", function( object ) {
-        object.scale.set(2, 2, 2);
-        object.rotateY(-Math.PI / 2);
-        object.position.y -= 1;
-        object.position.z += -3;
-        bufferScene.add(object);
-    });
-
-    addObj("assets/desk.mtl", "assets/desk.obj", function( object ) {
-        object.scale.set(2, 2, 4);
-        object.position.y += -1.3;
-        object.position.z += -3;
-        bufferScene.add(object);
-    });
-
-    // adding lamp light
-    lampLight = new THREE.PointLight(0xaaaaaa, 1, 0);
-    lampLight.position.set(3.5, 1.0, -4.0);
-    bufferScene.add(lampLight);
+    bufferObject = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
+    bufferCamera = new THREE.PerspectiveCamera( 90.0, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    bufferCamera.position.z += 5.0;
 
 ////// adding all objects to main scene /////////////////////////////////////
     // adding computer
@@ -230,15 +183,15 @@ function animate() {
 
 /////////////////////////////////////////////////////////////////////////////
 
-	var planeMaterial = new THREE.MeshBasicMaterial({map:bufferObject.texture});
-	var planeGeometry = new THREE.PlaneGeometry( 5, 5 );
-	planeMesh = new THREE.Mesh(planeGeometry,planeMaterial);
-	planeMesh.scale.set(0.3, 0.3, 0.3);
-	planeMesh.position.x += -0.1;
-	planeMesh.position.y += 0.45;
-	planeMesh.position.z += -3.6;
+    var planeMaterial = new THREE.MeshBasicMaterial({map:bufferObject.texture});
+    var planeGeometry = new THREE.PlaneGeometry( 5, 5 );
+    planeMesh = new THREE.Mesh(planeGeometry,planeMaterial);
+    planeMesh.scale.set(0.3, 0.3, 0.3);
+    planeMesh.position.x += -0.1;
+    planeMesh.position.y += 0.45;
+    planeMesh.position.z += -3.6;
 
-	scene.add( planeMesh );
+    scene.add( planeMesh );
 
 /////////////////////////////////////////////////////////////////////////////
     
@@ -256,8 +209,8 @@ function animate() {
 
 /////////////////////////////////////////////////////////////////////////////
 
-	renderer.setClearColor( 0xCCCCCC );
-	renderer.render(bufferScene,bufferCamera,bufferObject);
+    renderer.setClearColor( 0xCCCCCC );
+    renderer.render(scene,bufferCamera,bufferObject);
 
 /////////////////////////////////////////////////////////////////////////////
 
