@@ -38,6 +38,22 @@ var blackMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
 
 var light1, light2;
 
+function makeTexture() {
+    return new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
+                                       { minFilter: THREE.MinFilter,
+                                         magFilter: THREE.LinearFilter
+                                       });
+}
+
+var basicFBO = makeTexture();
+var preGlowFBO = makeTexture();
+var hblurFBO = makeTexture();
+var vblurFBO = makeTexture();
+var compositedGlowFBO = makeTexture();
+var lastFrame = makeTexture();
+var glowCompositor = new Compositor([basicFBO, vblurFBO]);
+var frameCopier = new Compositor([basicFBO]);
+
 load();
 function load() {
     var shaderNames = [];
@@ -70,12 +86,6 @@ function load() {
 }
 
 function init() {
-/////////////////////////////////////////////////////////////////////////////
-
-    bufferObject = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
-    bufferCamera = new THREE.PerspectiveCamera( 90.0, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    bufferCamera.position.z += 5.0;
-
 ////// adding all objects to main scene /////////////////////////////////////
     // adding computer
     addObj("assets/computer.mtl", "assets/computer.obj", function( object ) {
@@ -114,6 +124,17 @@ function init() {
     lampLight = new THREE.PointLight(0xaaaaaa, 1, 0);
     lampLight.position.set(3.5, 1.0, -4.0);
     scene.add(lampLight);
+
+    //adding computer screen
+    var screen = new THREE.Mesh(new THREE.PlaneGeometry( 1.4, 1 ),
+                                new THREE.MeshBasicMaterial({map: lastFrame.texture}));
+    screen.position.x += -0.1;
+    screen.position.y += 0.67;
+    screen.position.z += -3.6;
+    screen.rotation.x = 0.0;
+    screen.rotation.z = -0.04;
+
+    scene.add( screen );
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -166,34 +187,9 @@ function init() {
     animate();
 }
 
-function makeTexture() {
-    return new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight,
-                                       { minFilter: THREE.MinFilter,
-                                         magFilter: THREE.LinearFilter
-                                       });
-}
 
-var basicFBO = makeTexture();
-var preGlowFBO = makeTexture();
-var hblurFBO = makeTexture();
-var vblurFBO = makeTexture();
-var compositedGlowFBO = makeTexture();
-var glowCompositor = new Compositor([basicFBO, vblurFBO]);
 
 function animate() {
-
-/////////////////////////////////////////////////////////////////////////////
-
-    var planeMaterial = new THREE.MeshBasicMaterial({map:bufferObject.texture});
-    var planeGeometry = new THREE.PlaneGeometry( 5, 5 );
-    planeMesh = new THREE.Mesh(planeGeometry,planeMaterial);
-    planeMesh.scale.set(0.3, 0.3, 0.3);
-    planeMesh.position.x += -0.1;
-    planeMesh.position.y += 0.45;
-    planeMesh.position.z += -3.6;
-
-    scene.add( planeMesh );
-
 /////////////////////////////////////////////////////////////////////////////
     
     controls.update();
@@ -206,10 +202,7 @@ function animate() {
     light2.position.z = 5*Math.cos(time);
     renderer.setClearColor( 0xCCCCCC );
     renderer.render(scene, camera, basicFBO);
-
-/////////////////////////////////////////////////////////////////////////////
-
-    renderer.render(scene,bufferCamera,bufferObject);
+    frameCopier.render(renderer, lastFrame);
 
 /////////////////////////////////////////////////////////////////////////////
 
