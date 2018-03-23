@@ -3,7 +3,7 @@
 ## Talon Baker:
 * Created and added Pixelation post-processing effect.
 * Found and placed the desk, lamp, computer, and room wall objects from Google Poly (References to objects can be found in out SIGGRAPH Team Documentation).
-* Created a render-to-texture for the computer screen within the scene to display the scene itself without the alien object in the scene.
+* helped with creating a render-to-texture for the computer screen within the scene to display the scene itself.
 * Created outline for SIGGRAPH-Style Team Documentation paper.
 * Created README.
 
