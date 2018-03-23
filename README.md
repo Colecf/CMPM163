@@ -14,7 +14,7 @@
 * Contributions
 
 ## Kirby Choy:
-* Contributions
+* Did not contribute to this team project
 
 ## Scene Instructions:
 * Use the THREE.js OrbitControls to move the camera around the scene (ie. Left mouse click for camera view control, mouse scroll to zoom camera in and out).
