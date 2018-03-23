@@ -17,6 +17,7 @@ var postProcessingDefinitions = [
     {name: 'pixelation', uniforms: {
         pixelAmt: {type: 'f', value: 32.0}
     }},
+    {name: 'bezier'},
     {name: 'squares'},
     {name: 'hblur', uniforms: {
         radius: {type: 'f', value: 15}
@@ -195,7 +196,6 @@ function animate() {
 
 /////////////////////////////////////////////////////////////////////////////
     
-    requestAnimationFrame(animate);
     controls.update();
     var time = performance.now() * options.timeScale/1000;
 
@@ -204,18 +204,19 @@ function animate() {
 
     light2.position.x = 5*Math.sin(time);
     light2.position.z = 5*Math.cos(time);
-
+    renderer.setClearColor( 0xCCCCCC );
     renderer.render(scene, camera, basicFBO);
 
 /////////////////////////////////////////////////////////////////////////////
 
-    renderer.setClearColor( 0xCCCCCC );
     renderer.render(scene,bufferCamera,bufferObject);
 
 /////////////////////////////////////////////////////////////////////////////
 
     if(options.glowState != 'none') {
         // Make everything black except what's supposed to glow
+        var backupClearColor = renderer.getClearColor();
+        renderer.setClearColor(0);
         scene.traverse(function( node ) {
             if ( node instanceof THREE.Mesh ) {
                 node.materialBackup = node.material;
@@ -226,20 +227,16 @@ function animate() {
         });
         renderer.render(scene, camera, preGlowFBO);
         // Return the original materials to everything
+        console.log(backupClearColor);
+        renderer.setClearColor(backupClearColor);
         scene.traverse( function( node ) {
             if ( node instanceof THREE.Mesh ) {
                 node.material = node.materialBackup;
             }
         });
-        if(options.glowState != 'pre glow') {
-            postProcessors['hblur'].render(renderer, preGlowFBO, hblurFBO);
-            if(options.glowState != 'hblur') {
-                postProcessors['vblur'].render(renderer, hblurFBO, vblurFBO);
-                if(options.glowState != 'h+vblur') {
-                    glowCompositor.render(renderer, compositedGlowFBO);
-                }
-            }
-        }
+        postProcessors['hblur'].render(renderer, preGlowFBO, hblurFBO);
+        postProcessors['vblur'].render(renderer, hblurFBO, vblurFBO);
+        glowCompositor.render(renderer, compositedGlowFBO);
     }
 
     if(options.glowState == 'none') {
@@ -253,6 +250,8 @@ function animate() {
     } else {
         postProcessors[options.activePostProcessor].render(renderer, compositedGlowFBO);
     }
+
+    requestAnimationFrame(animate);
 }
 
 function onWindowResize( event ) {

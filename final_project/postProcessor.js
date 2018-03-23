@@ -10,7 +10,8 @@ function PostProcessor(frag, uniforms) {
     this.planeMaterial = new THREE.ShaderMaterial({
         uniforms: THREE.UniformsUtils.merge([uniforms, {
             inputTexture: { type: 't', value: undefined },
-            iResolution: { type: "2f", value: [window.innerWidth, window.innerHeight] }
+            iResolution: { type: "2f", value: [window.innerWidth, window.innerHeight] },
+            iTime: { type: 'f', value: 0 }
         }]),
         vertexShader: postProcessingVertexShader,
         fragmentShader: frag
@@ -24,6 +25,7 @@ function PostProcessor(frag, uniforms) {
     var t = this;
     this.render = function(renderer, input, FBO) {
         t.plane.material.uniforms.inputTexture.value = input.texture;
+        t.plane.material.uniforms.iTime.value = performance.now() / 1000;
         if(FBO) {
             renderer.render(t.scene, t.camera, FBO);
         } else {
