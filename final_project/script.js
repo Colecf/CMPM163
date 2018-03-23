@@ -166,11 +166,11 @@ function init() {
     document.body.appendChild( renderer.domElement );
     camera = new THREE.PerspectiveCamera( 60.0, window.innerWidth / window.innerHeight, 0.1, 50 );
     camera.position.x += -0.1;
-    camera.position.y += 0.4;
-    camera.position.z += -2.5;
+    camera.position.y += 1.0;
+    camera.position.z += -2.0;
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.target = new THREE.Vector3(0.0, 0.0, -4.0);
+    controls.target = new THREE.Vector3(0.0, 0.4, -4.0);
 
     window.addEventListener( 'resize', onWindowResize, false );
 
@@ -220,7 +220,7 @@ function animate() {
         });
         renderer.render(scene, camera, preGlowFBO);
         // Return the original materials to everything
-        console.log(backupClearColor);
+        // console.log(backupClearColor);
         renderer.setClearColor(backupClearColor);
         scene.traverse( function( node ) {
             if ( node instanceof THREE.Mesh ) {
