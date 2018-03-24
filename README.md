@@ -8,7 +8,9 @@
 * Created README.
 
 ## Cole Faust:
-* Contributions
+* Created glow effect
+* Created bezier surface distortion effect
+* Helped with computer screen contents (made the prior frame display on the computer screen)
 
 ## Andy Long:
 * Contributions
