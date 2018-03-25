@@ -22,6 +22,10 @@ var postProcessingDefinitions = [
     {name: 'hblur', uniforms: {
         radius: {type: 'f', value: 15}
     }},
+    {name: 'RGBshift', uniforms:{
+        blurAmount: {type: 'f', value: 0.1},
+        iTime: {type: 'f', value: 0.1}
+    }},
     {name: 'vblur', uniforms: {
         radius: {type: 'f', value: 15}
     }}
@@ -183,6 +187,7 @@ function init() {
         postProcessors['vblur'].uniforms.radius.value = postProcessors['hblur'].uniforms.radius.value;
     });
     gui.add(postProcessors['pixelation'].uniforms.pixelAmt, 'value', 4, 100).name("pixelation");
+    gui.add(postProcessors['RGBshift'].uniforms.blurAmount, 'value',0.01, 1).name("Blur Amount");
     
     animate();
 }
@@ -194,6 +199,7 @@ function animate() {
     
     controls.update();
     var time = performance.now() * options.timeScale/1000;
+    postProcessors['RGBshift'].uniforms.iTime.value += performance.now();
 
     light1.position.x = 5*Math.sin(time);
     light1.position.z = 5*Math.cos(time);
