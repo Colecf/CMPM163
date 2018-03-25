@@ -13,7 +13,7 @@
 * Helped with computer screen contents (made the prior frame display on the computer screen)
 
 ## Andy Long:
-* Contributions
+* Created the RGB shift (Old/Bad TV) effect
 
 ## Kirby Choy:
 * Did not contribute to this team project
