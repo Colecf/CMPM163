@@ -199,7 +199,12 @@ function animate() {
     
     controls.update();
     var time = performance.now() * options.timeScale/1000;
-    postProcessors['RGBshift'].uniforms.iTime.value += performance.now();
+    if(postProcessors['RGBshift'].uniforms.iTime.value<= 1){
+        postProcessors['RGBshift'].uniforms.iTime.value += performance.now();
+    }
+    else if(postProcessors['RGBshift'].uniforms.iTime.value >= 20000000){
+        postProcessors['RGBshift'].uniforms.iTime.value = 1;
+    }
 
     light1.position.x = 5*Math.sin(time);
     light1.position.z = 5*Math.cos(time);
