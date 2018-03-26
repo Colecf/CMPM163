@@ -1,8 +1,8 @@
 # CMPM163 - Final Group Project
 
-[Demo Video](https://youtu.be/pzBnruMG-go)
-[Link to live copy](https://colecf.github.io/cmpm163/final_project)
-[Report](https://github.com/Colecf/CMPM163/blob/master/final_project/report.pdf)
+[Demo Video](https://youtu.be/pzBnruMG-go)  
+[Link to live copy](https://colecf.github.io/cmpm163/final_project)  
+[Report](https://github.com/Colecf/CMPM163/blob/master/final_project/report.pdf)  
 [Week 10 Presentation](https://github.com/Colecf/CMPM163/blob/master/final_project/powerpoint.pptx)
 
 ## Talon Baker:
