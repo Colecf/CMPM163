@@ -4,8 +4,10 @@
 * Created and added Pixelation post-processing effect.
 * Found and placed the desk, lamp, computer, and room wall objects from Google Poly (References to objects can be found in out SIGGRAPH Team Documentation).
 * helped with creating a render-to-texture for the computer screen within the scene to display the scene itself.
-* Created outline for SIGGRAPH-Style Team Documentation paper.
-* Created README.
+* I wanted to make it clear how much Cole helped me on this project.
+I tried to implemented the render-to-texture but it was laggy and didn’t update based on camera movement. Cole helped fix the lag problem and added the screen updating with the camera.
+Cole also fixed various other lag problems and helped build the code so it was easy for us (with lesser knowledge of three.js and shaders) to add and updated our own code.
+I think everything came together in the end very well. I’m proud of our accomplishments on this project.
 
 ## Cole Faust:
 * Created glow effect
