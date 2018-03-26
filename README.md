@@ -1,5 +1,7 @@
 # CMPM163 - Final Group Project
 
+[Demo Video](https://youtu.be/pzBnruMG-go)
+
 ## Talon Baker:
 * Created and added Pixelation post-processing effect.
 * Found and placed the desk, lamp, computer, and room wall objects from Google Poly (References to objects can be found in out SIGGRAPH Team Documentation).
