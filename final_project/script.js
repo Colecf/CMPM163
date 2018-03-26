@@ -23,8 +23,7 @@ var postProcessingDefinitions = [
         radius: {type: 'f', value: 15}
     }},
     {name: 'RGBshift', uniforms:{
-        blurAmount: {type: 'f', value: 0.1},
-        iTime: {type: 'f', value: 0.1}
+        blurAmount: {type: 'f', value: 0.1}
     }},
     {name: 'vblur', uniforms: {
         radius: {type: 'f', value: 15}
@@ -131,7 +130,7 @@ function init() {
 
     //adding computer screen
     var screen = new THREE.Mesh(new THREE.PlaneGeometry( 1.4, 1 ),
-                                new THREE.MeshBasicMaterial({map: lastFrame.texture}));
+                                postProcessors['RGBshift'].planeMaterial);
     screen.position.x += -0.1;
     screen.position.y += 0.67;
     screen.position.z += -3.6;
@@ -199,12 +198,6 @@ function animate() {
     
     controls.update();
     var time = performance.now() * options.timeScale/1000;
-    if(postProcessors['RGBshift'].uniforms.iTime.value<= 1){
-        postProcessors['RGBshift'].uniforms.iTime.value += performance.now();
-    }
-    else if(postProcessors['RGBshift'].uniforms.iTime.value >= 20000000){
-        postProcessors['RGBshift'].uniforms.iTime.value = 1;
-    }
 
     light1.position.x = 5*Math.sin(time);
     light1.position.z = 5*Math.cos(time);
@@ -255,12 +248,16 @@ function animate() {
         postProcessors[options.activePostProcessor].render(renderer, compositedGlowFBO);
     }
 
+    // Just dump the render into basicFBO, this is just to update the uniforms
+    // used on the computer screen
+    postProcessors['RGBshift'].render(renderer, lastFrame, basicFBO);
+
     requestAnimationFrame(animate);
 }
 
 function onWindowResize( event ) {
-    FBO.width = window.innerWidth;
-    FBO.height = window.innerHeight;
+    //FBO.width = window.innerWidth;
+    //FBO.height = window.innerHeight;
     //plane.material.uniforms.iResolution.value = [window.innerWidth, window.innerHeight];
     renderer.setSize( window.innerWidth, window.innerHeight );
     camera.aspect = window.innerWidth / window.innerHeight;
