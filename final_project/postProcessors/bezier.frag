@@ -18,7 +18,7 @@ float B(float n, float i, float u) {
 }
 
 vec2 controlPoint(vec2 uv) {
-  if(uv.x == 1. && uv.y == 1.) {
+  if(uv == vec2(1., 1.)) {
     return vec2(sin(iTime*TIMESCALE), cos(iTime*TIMESCALE)) * 0.5 + 0.5;
   }
   return vec2(uv/2.);
