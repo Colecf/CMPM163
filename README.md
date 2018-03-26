@@ -10,7 +10,8 @@
 ## Cole Faust:
 * Created glow effect
 * Created bezier surface distortion effect
-* Helped with computer screen contents (made the prior frame display on the computer screen)
+* Helped with computer screen contents (made the prior frame display on the computer screen, and put RGB shift effect on the screen)
+* Created boilerplate code / framework to add effects on
 
 ## Andy Long:
 * Created the RGB shift (Old/Bad TV) effect
